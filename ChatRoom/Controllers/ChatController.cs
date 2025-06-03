@@ -15,9 +15,9 @@ namespace ChatRoom.Controllers
         //}
 
         [HttpPost("PostMessage")]
-        public Message PostMessage([FromBody]string message, [FromBody]ConsoleColor color)
+        public void PostMessage([FromBody]Message message)
         {
-            return new Message(message, color);
+            //todo: make server
         }
 
 
