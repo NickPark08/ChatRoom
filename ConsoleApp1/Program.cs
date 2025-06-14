@@ -9,33 +9,41 @@ namespace ConsoleApp1
         static async Task Main(string[] args)
         {
             HttpClient httpClient = new HttpClient();
+            bool userOne = true;
 
-            WeatherForecast thingy = new WeatherForecast();
-
-            var messageContent = Console.ReadLine();
-
-            ConsoleColor color = ConsoleColor.Green;
-
-            var response = await httpClient.PostAsync(@"https://localhost:7211/Chatroom/PostMessage", JsonContent.Create(messageContent));
-
-
-
-            try
+            while (true)
             {
-                response.EnsureSuccessStatusCode();
+                var getResponse = await httpClient.GetAsync(@"https://localhost:7211/Chat/GetMessages");
+                List<Message> content = await getResponse.Content.ReadFromJsonAsync<List<Message>>();
+
+                foreach (var mes in content)
+                {
+                    Console.ForegroundColor = mes.User;
+                    Console.WriteLine(mes.MessageContent);
+                }
+
+                Console.ForegroundColor = ConsoleColor.White;
+                var messageContent = Console.ReadLine();
+
+                ConsoleColor color = userOne ? ConsoleColor.Green : ConsoleColor.Blue;
+                var message = new Message(messageContent, color);
+
+                var postResponse = await httpClient.PostAsync(@"https://localhost:7211/Chat/PostMessage", JsonContent.Create(message));
+
+                try
+                {
+                    postResponse.EnsureSuccessStatusCode();
+                }
+                catch
+                {
+                    Console.WriteLine("thingy no worky :(");
+                }
+
+                userOne = !userOne;
+                Console.Clear();
+
+                ;
             }
-            catch
-            {
-                Console.WriteLine("thingy no worky :(");
-            }
-
-            var message = await response.Content.ReadFromJsonAsync<Message>();
-
-            Console.ForegroundColor = message.User;
-            Console.WriteLine(message.MessageContent);
-
-            //WeatherForecast[] content = await response.Content.ReadFromJsonAsync<WeatherForecast[]>();
-            ;
         }
     }
 }
