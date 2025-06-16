@@ -2,11 +2,11 @@
 {
     public static class ChatServer
     {
-        public static List<Message> messages = [];
+        public static Dictionary<Guid, List<Message>> messages = [];
 
-        public static void AddMessage(Message message)
+        public static void AddMessage(Message message, Guid roomID)
         {
-            messages.Add(message);
+            messages[roomID].Add(message);
         }
     }
 }

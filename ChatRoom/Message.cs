@@ -8,12 +8,15 @@ namespace ChatRoom
 
         public ConsoleColor User {  get; set; }
 
+        public Guid RoomID { get; set; }
 
 
-        public Message(string message, ConsoleColor color)
+
+        public Message(string message, ConsoleColor color, Guid roomID)
         {
             MessageContent = message;
             User = color;
+            RoomID = roomID;
         }
 
         public Message()
