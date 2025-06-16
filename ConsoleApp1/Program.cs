@@ -11,10 +11,13 @@ namespace ConsoleApp1
             HttpClient httpClient = new HttpClient();
             bool userOne = true;
 
+            var getResponse = await httpClient.GetAsync(@"https://localhost:7211/Chat/GetMessages");
+            List<Message> content = await getResponse.Content.ReadFromJsonAsync<List<Message>>();
+
             while (true)
             {
-                var getResponse = await httpClient.GetAsync(@"https://localhost:7211/Chat/GetMessages");
-                List<Message> content = await getResponse.Content.ReadFromJsonAsync<List<Message>>();
+                getResponse = await httpClient.GetAsync(@"https://localhost:7211/Chat/GetMessages");
+                content = await getResponse.Content.ReadFromJsonAsync<List<Message>>();
 
                 foreach (var mes in content)
                 {
