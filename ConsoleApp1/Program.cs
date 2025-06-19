@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
 using System.Net.Http.Json;
 using System.Text;
+
 using ChatRoom;
+
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace ConsoleApp1
@@ -15,9 +17,10 @@ namespace ConsoleApp1
             string messageContent;
             string user;
             string roomID;
-            List<Message> oldMessage = [];
+            Dictionary<Guid, List<Message>> oldMessage = [];
             StringBuilder sb = new StringBuilder();
             ConsoleColor color = ConsoleColor.White;
+            Guid testRoom;
 
             Console.WriteLine("Please enter your user id");
             user = Console.ReadLine();
@@ -25,23 +28,34 @@ namespace ConsoleApp1
             Console.WriteLine("Now please enter the id of the chatroom you would like to join, or type 'create' to create one");
             roomID = Console.ReadLine();
 
-
+            testRoom = new Guid(roomID);
 
 
             var getResponse = await httpClient.GetAsync(@"https://localhost:7211/Chat/GetMessages");
-            List<Message> content = await getResponse.Content.ReadFromJsonAsync<List<Message>>();
+            var content = await getResponse.Content.ReadFromJsonAsync<Dictionary<Guid, List<Message>>>();
 
             sb.AppendLine(user + ": ");
 
             while (true)
             {
                 getResponse = await httpClient.GetAsync(@"https://localhost:7211/Chat/GetMessages");
-                content = await getResponse.Content.ReadFromJsonAsync<List<Message>>();
+                content = await getResponse.Content.ReadFromJsonAsync<Dictionary<Guid, List<Message>>>();
 
                 if (content.Count != oldMessage.Count)
                 {
                     Console.Clear();
-                    foreach (var mes in content)
+                    //foreach (var mes in content)
+                    //{
+                    //    if (mes.Key == testRoom)
+                    //    {
+
+                    //        Console.ForegroundColor = mes.Value;
+                    //        Console.WriteLine(mes.MessageContent);
+                    //        Console.WriteLine();
+                    //    }
+                    //}
+                    var messages = content[testRoom];
+                    foreach (var mes in messages)
                     {
                         Console.ForegroundColor = mes.User;
                         Console.WriteLine(mes.MessageContent);
@@ -62,7 +76,7 @@ namespace ConsoleApp1
                     {
                         //send message
                         messageContent = sb.ToString();
-                        message = new Message(messageContent, color, roomID);
+                        message = new Message(messageContent, color, testRoom);
 
                     }
                     else if (keyInfo.Key == ConsoleKey.Backspace || keyInfo.Key == ConsoleKey.Delete)

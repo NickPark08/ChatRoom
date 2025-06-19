@@ -17,13 +17,13 @@ namespace ChatRoom.Controllers
         [HttpPost("PostMessage")]
         public ActionResult PostMessage([FromBody]Message message)
         {
-            ChatServer.AddMessage(message);
+            ChatServer.AddMessage(message, message.RoomID);
 
             return Ok();
         }
 
         [HttpGet("GetMessages")]
-        public IEnumerable<Message> GetMessages()
+        public Dictionary<Guid, List<Message>> GetMessages()
         {
             return ChatServer.messages;
         }
