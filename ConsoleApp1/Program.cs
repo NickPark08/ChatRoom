@@ -17,7 +17,7 @@ namespace ConsoleApp1
             string messageContent;
             string user;
             string roomID;
-            Dictionary<Guid, List<Message>> oldMessage = [];
+            List<Message> oldMessage = [];
             StringBuilder sb = new StringBuilder();
             ConsoleColor color = ConsoleColor.White;
             Guid testRoom;
@@ -30,16 +30,27 @@ namespace ConsoleApp1
 
             testRoom = new Guid(roomID);
 
+            var newRoomResponse = await httpClient.PostAsync(@"https://localhost:7211/Chat/NewRoom", JsonContent.Create(testRoom));
+            try
+            {
+                newRoomResponse.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                Console.WriteLine("thingy no worky :(");
+            }
 
-            var getResponse = await httpClient.GetAsync(@"https://localhost:7211/Chat/GetMessages");
-            var content = await getResponse.Content.ReadFromJsonAsync<Dictionary<Guid, List<Message>>>();
 
             sb.AppendLine(user + ": ");
 
+            var getResponse = await httpClient.PostAsync(@"https://localhost:7211/Chat/GetMessages", JsonContent.Create(testRoom));
+            var content = await getResponse.Content.ReadFromJsonAsync<List<Message>>();
+
+
             while (true)
             {
-                getResponse = await httpClient.GetAsync(@"https://localhost:7211/Chat/GetMessages");
-                content = await getResponse.Content.ReadFromJsonAsync<Dictionary<Guid, List<Message>>>();
+                getResponse = await httpClient.PostAsync(@"https://localhost:7211/Chat/GetMessages", JsonContent.Create(testRoom));
+                content = await getResponse.Content.ReadFromJsonAsync<List<Message>>();
 
                 if (content.Count != oldMessage.Count)
                 {
@@ -54,8 +65,7 @@ namespace ConsoleApp1
                     //        Console.WriteLine();
                     //    }
                     //}
-                    var messages = content[testRoom];
-                    foreach (var mes in messages)
+                    foreach (var mes in content)
                     {
                         Console.ForegroundColor = mes.User;
                         Console.WriteLine(mes.MessageContent);

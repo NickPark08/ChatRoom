@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ChatRoom.Controllers
 {
@@ -15,18 +16,30 @@ namespace ChatRoom.Controllers
         //}
 
         [HttpPost("PostMessage")]
-        public ActionResult PostMessage([FromBody]Message message)
+        public ActionResult PostMessage([FromBody] Message message)
         {
             ChatServer.AddMessage(message, message.RoomID);
 
             return Ok();
         }
 
-        [HttpGet("GetMessages")]
-        public Dictionary<Guid, List<Message>> GetMessages()
+        [HttpPost("GetMessages")]
+        public List<Message> GetMessages([FromBody] Guid roomID)
         {
-            return ChatServer.messages;
+            return ChatServer.messages[roomID];
         }
+
+        [HttpPost("NewRoom")]
+        public ActionResult NewRoom([FromBody] Guid roomID)
+        {
+            if (!ChatServer.messages.ContainsKey(roomID))
+            {
+                ChatServer.messages.Add(roomID, new List<Message>());
+            }
+
+            return Ok();
+        }
+
 
 
         /*

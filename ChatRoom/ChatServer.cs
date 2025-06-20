@@ -1,6 +1,6 @@
 ﻿namespace ChatRoom
 {
-    public static class ChatServer
+    static class ChatServer
     {
         public static Dictionary<Guid, List<Message>> messages = [];
 
@@ -8,5 +8,11 @@
         {
             messages[roomID].Add(message);
         }
+
+        //public static void AddRoom(Guid roomID)
+        //{
+        //    messages.Add(roomID, new List<Message>());
+        //    ;
+        //}
     }
 }
