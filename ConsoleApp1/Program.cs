@@ -28,7 +28,7 @@ namespace ConsoleApp1
             Console.WriteLine("Now please enter the id of the chatroom you would like to join, or type 'create' to create one");
             roomID = Console.ReadLine();
 
-            testRoom = new Guid(roomID);
+            Guid.TryParse(roomID, out testRoom);
 
             var newRoomResponse = await httpClient.PostAsync(@"https://localhost:7211/Chat/NewRoom", JsonContent.Create(testRoom));
             try
